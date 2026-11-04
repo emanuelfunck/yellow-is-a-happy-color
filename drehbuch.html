@@ -14,7 +14,7 @@
   --ink-soft: #62625f;
   --rule: #dcdcd9;
   --blue: #3a5a8c;
-  --pencil: #54555a;
+  --pencil: #65666c;
   --fs-hand: "Caveat", "Bradley Hand", "Segoe Script", cursive;
   --yellow: #b8860b;
   --yellow-soft: #f0e2b4;
@@ -121,14 +121,14 @@ body::before {
   font-weight: 600;
   line-height: 1;
   color: var(--pencil);
-  opacity: .78;
+  opacity: .9;
   background: transparent;
   border: 0;
   padding: 0;
   margin: 0;
   cursor: pointer;
   white-space: nowrap;
-  filter: url(#pencilGrain);
+  filter: url(#pencilText);
   transform: rotate(-2.6deg);
   transform-origin: left bottom;
 }
@@ -137,8 +137,8 @@ body::before {
   position: absolute;
   left: 0;
   top: 0;
-  transform: translate(.7px, .5px) rotate(.7deg);
-  opacity: .45;
+  transform: translate(.4px, .28px) rotate(.4deg);
+  opacity: .2;
 }
 .vswitch:hover { opacity: 1; }
 .vswitch:focus-visible { outline: 1.5px solid var(--pencil); outline-offset: 3px; border-radius: 3px; }
@@ -356,15 +356,19 @@ body[data-marks="on"] .paren[data-claude] { box-shadow: 0 0 0 3px var(--yellow-s
                            .75 .6 .45 0 .05"/>
     <feComposite in="wavy" in2="ga" operator="in"/>
   </filter>
-  <!-- Nur Korn, ohne Verzug: für die später hingeschriebene Notiz. -->
-  <filter id="pencilGrain" x="-12%" y="-12%" width="124%" height="124%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="4" seed="5" result="g2"/>
+  <!-- Dieselbe Behandlung wie die Klammer, nur feiner: die Schrift ist
+       kleiner, also weniger Verzug bei gleichem Korn. -->
+  <filter id="pencilText" x="-18%" y="-18%" width="136%" height="136%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="17" result="wob2"/>
+    <feDisplacementMap in="SourceGraphic" in2="wob2" scale="0.85"
+                       xChannelSelector="R" yChannelSelector="G" result="wavy2"/>
+    <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="4" seed="31" result="g2"/>
     <feColorMatrix in="g2" type="matrix" result="ga2"
                    values="0 0 0 0 0
                            0 0 0 0 0
                            0 0 0 0 0
-                           .6 .5 .4 0 .3"/>
-    <feComposite in="SourceGraphic" in2="ga2" operator="in"/>
+                           .75 .6 .45 0 .05"/>
+    <feComposite in="wavy2" in2="ga2" operator="in"/>
   </filter>
 </svg>
 
