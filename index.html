@@ -1,3 +1,15 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  body { margin: 0; }
+</style>
 <title>Yellow Is a Happy Color</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,9 +109,10 @@ body::before {
   position: absolute;
   z-index: 1;
   left: 718px;
-  overflow: visible;
+  /* schneidet das Stueck der Seite aus der durchgehenden Klammer heraus */
+  overflow: hidden;
   opacity: .82;
-  pointer-events: none;
+  cursor: pointer;
   filter: url(#pencilLine);
   transform: rotate(-.8deg);
 }
@@ -108,6 +121,13 @@ body::before {
   stroke: var(--pencil);
   stroke-linecap: round;
   stroke-linejoin: round;
+  pointer-events: none;
+}
+/* breiter, unsichtbarer Strich als Klickflaeche */
+.vbracket .hit {
+  stroke: transparent;
+  stroke-width: 16;
+  pointer-events: stroke;
 }
 .vbracket .main  { stroke-width: 1.7; opacity: .9; }
 .vbracket .echo  { stroke-width: 1.1; opacity: .5; }
@@ -538,18 +558,23 @@ function makeEl(block) {
   return p;
 }
 
-/* Eine mit der Hand gezogene geschweifte Klammer: Spitze zeigt nach links
-   auf den Text, die Enden laufen nach rechts aus. Das Zittern ist pro
-   Stelle fest, damit die Linie beim Umschalten nicht herumspringt. */
-function brace(seedStr, top, h) {
+/* Eine mit der Hand gezogene geschweifte Klammer: Spitze zeigt nach rechts,
+   die offene Seite liegt links am Text. Das Zittern ist pro Stelle fest,
+   damit die Linie beim Umschalten nicht herumspringt.
+
+   Laeuft eine Passage ueber einen Seitenumbruch, wird nicht pro Seite eine
+   eigene Klammer gezeichnet, sondern immer dieselbe, durchgehende Klammer
+   ueber die volle Hoehe der Passage (total). Jede Seite zeigt davon nur ihr
+   Stueck: Das Fenster (viewBox) wird um offset nach unten geschoben und der
+   Rest abgeschnitten. So gibt es genau einen Bogen in der Mitte und nur am
+   echten Anfang und Ende einen waagerechten Einschlag. */
+function brace(seedStr, top, total, offset, segH, isFirst, isLast) {
   const NS = "http://www.w3.org/2000/svg";
   const W = 20;            // bis zur Spitze rechts
   const STEM = W * .52;    // der senkrechte Teil
-  const mid = h / 2;
-  const curl = Math.min(18, h / 6);   // Länge der Einschläge
+  const mid = total / 2;
+  const curl = Math.min(18, total / 6);   // Länge der Einschläge
 
-  /* Offene Seite links am Text, Spitze rechts. Oben und unten schlägt
-     der Strich waagerecht ein, damit der markierte Bereich eindeutig ist. */
   function shape(seed, amp) {
     let s = seed;
     const rnd = () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
@@ -560,22 +585,31 @@ function brace(seedStr, top, h) {
       `C ${STEM * .55 + j(1.6)},${-.4 + j(1)} ${STEM + j(1.4)},${1.4 + j(1)} ${STEM + j(1.2)},${curl + j(1.4)}`,
       // Schaft nach unten, dann raus auf die Spitze
       `C ${STEM + j(1)},${mid - curl * .55 + j(1.5)} ${W - 5 + j(1.6)},${mid - curl * .5 + j(1.2)} ${W + j(1.6)},${mid + j(1.6)}`,
-      `C ${W - 5 + j(1.6)},${mid + curl * .5 + j(1.2)} ${STEM + j(1)},${mid + curl * .55 + j(1.5)} ${STEM + j(1.2)},${h - curl + j(1.4)}`,
+      `C ${W - 5 + j(1.6)},${mid + curl * .5 + j(1.2)} ${STEM + j(1)},${mid + curl * .55 + j(1.5)} ${STEM + j(1.2)},${total - curl + j(1.4)}`,
       // waagerechter Einschlag unten
-      `C ${STEM + j(1.4)},${h - 1.4 + j(1)} ${STEM * .55 + j(1.6)},${h + .4 + j(1)} ${-1 + j(2)},${h - .5 + j(1.2)}`
+      `C ${STEM + j(1.4)},${total - 1.4 + j(1)} ${STEM * .55 + j(1.6)},${total + .4 + j(1)} ${-1 + j(2)},${total - .5 + j(1.2)}`
     ].join(" ");
   }
 
+  // Der Startwert haengt an der Gesamthoehe, nicht am Stueck: Dadurch ziehen
+  // alle Seiten exakt dieselbe Linie und die Stuecke passen aneinander.
   let base = 7;
-  for (const ch of seedStr + h) base = (base * 31 + ch.charCodeAt(0)) % 100000;
+  for (const ch of seedStr + total) base = (base * 31 + ch.charCodeAt(0)) % 100000;
+
+  const padT = isFirst ? 6 : 0;   // Platz fuer den Strich ueber dem Einschlag
+  const padB = isLast ? 6 : 0;
+  const boxH = segH + padT + padB;
 
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("class", "vbracket");
   svg.setAttribute("width", W + 10);
-  svg.setAttribute("height", h + 12);
-  svg.setAttribute("viewBox", `-5 -6 ${W + 10} ${h + 12}`);
+  svg.setAttribute("height", boxH);
+  svg.setAttribute("viewBox", `-5 ${offset - padT} ${W + 10} ${boxH}`);
   svg.setAttribute("aria-hidden", "true");
-  svg.style.top = (top - 6) + "px";
+  svg.style.top = (top - padT) + "px";
+  // Alle Stuecke um denselben gedachten Punkt kippen, sonst versetzt die
+  // Drehung sie gegeneinander.
+  svg.style.transformOrigin = "0px " + (padT - offset) + "px";
 
   // Dreimal angesetzt, wie man eine Klammer mit dem Bleistift zieht.
   for (const [cls, seed, amp] of [
@@ -588,14 +622,25 @@ function brace(seedStr, top, h) {
     path.setAttribute("d", shape(seed, amp));
     svg.appendChild(path);
   }
+
+  // Unsichtbarer, breiter Strich: macht die ganze Klammer anklickbar, auch
+  // auf einer Folgeseite, wo die Beschriftung fehlt.
+  const hit = document.createElementNS(NS, "path");
+  hit.setAttribute("class", "hit");
+  hit.setAttribute("d", shape(base, 1));
+  svg.appendChild(hit);
+
   return svg;
 }
 
-/* Zusammenhängende Variantenblöcke bekommen eine Klammer im rechten Rand
-   und darüber den Schalter. Bricht die Passage um, erhält jede Seite ihre
-   eigene Klammer. */
+/* Zusammenhängende Variantenblöcke bekommen eine Klammer im rechten Rand und
+   darüber den Schalter. Bricht die Passage um, laufen die Stücke der Seiten
+   zu einer einzigen, durchgehenden Klammer zusammen. */
 function drawBrackets(pages) {
   const PAD_TOP = 96;
+
+  // 1. Pro Seite die Abschnitte einsammeln.
+  const segs = [];
   for (const page of pages) {
     const content = page.querySelector(".content");
     if (!content) continue;
@@ -609,29 +654,68 @@ function drawBrackets(pages) {
 
       const top = PAD_TOP + kids[i].offsetTop;
       const bottom = PAD_TOP + kids[j].offsetTop + kids[j].offsetHeight;
-      const all = versionsOf(g);
-      const cur = STATE[g];
-      const next = all[(all.indexOf(cur) + 1) % all.length];
-
-      page.appendChild(brace(g, top, Math.max(30, bottom - top)));
-
-      const sw = document.createElement("button");
-      sw.className = "vswitch";
-      const label = "Version " + cur + "/" + all.length;
-      for (const cls of ["t", "t echo"]) {
-        const span = document.createElement("span");
-        span.className = cls;
-        span.textContent = label;
-        if (cls !== "t") span.setAttribute("aria-hidden", "true");
-        sw.appendChild(span);
-      }
-      sw.title = "Version " + next + " dieser Passage zeigen";
-      sw.style.top = (top - 18) + "px";
-      sw.addEventListener("click", () => setVersion(g, next));
-      page.appendChild(sw);
-
+      segs.push({
+        page, g, top,
+        h: Math.max(18, bottom - top),
+        // bis zum unteren Rand des Satzspiegels, falls die Passage weiterlaeuft
+        pageBottom: PAD_TOP + content.clientHeight,
+        opensPage: i === 0,
+        closesPage: j === kids.length - 1
+      });
       i = j + 1;
     }
+  }
+
+  // 2. Was am Seitenende aufhoert und auf der naechsten Seite oben derselben
+  //    Fassung weiterlaeuft, ist eine Passage.
+  const runs = [];
+  for (const seg of segs) {
+    const run = runs[runs.length - 1];
+    const prev = run && run[run.length - 1];
+    if (prev && prev.g === seg.g && prev.closesPage && seg.opensPage) run.push(seg);
+    else runs.push([seg]);
+  }
+
+  // 3. Zeichnen: eine Klammer ueber die ganze Passage, in Stuecken verteilt.
+  for (const run of runs) {
+    // Laeuft die Passage weiter, reicht das Stueck bis an den Blattrand,
+    // sonst wuerde die Linie mitten auf der Seite abbrechen.
+    for (let k = 0; k < run.length - 1; k++) {
+      run[k].h = Math.max(run[k].h, run[k].pageBottom - run[k].top);
+    }
+
+    const g = run[0].g;
+    const total = run.reduce((sum, seg) => sum + seg.h, 0);
+    const all = versionsOf(g);
+    const cur = STATE[g];
+    const next = all[(all.indexOf(cur) + 1) % all.length];
+    const switchTo = () => setVersion(g, next);
+
+    let offset = 0;
+    run.forEach((seg, k) => {
+      const svg = brace(g, seg.top, total, offset, seg.h,
+                        k === 0, k === run.length - 1);
+      svg.addEventListener("click", switchTo);
+      svg.setAttribute("title", "Version " + next + " dieser Passage zeigen");
+      seg.page.appendChild(svg);
+      offset += seg.h;
+    });
+
+    // Die Beschriftung steht nur einmal, am Anfang der Passage.
+    const sw = document.createElement("button");
+    sw.className = "vswitch";
+    const label = "Version " + cur + "/" + all.length;
+    for (const cls of ["t", "t echo"]) {
+      const span = document.createElement("span");
+      span.className = cls;
+      span.textContent = label;
+      if (cls !== "t") span.setAttribute("aria-hidden", "true");
+      sw.appendChild(span);
+    }
+    sw.title = "Version " + next + " dieser Passage zeigen";
+    sw.style.top = (run[0].top - 18) + "px";
+    sw.addEventListener("click", switchTo);
+    run[0].page.appendChild(sw);
   }
 }
 
@@ -817,3 +901,4 @@ document.getElementById("btnCopy").addEventListener("click", async () => {
 
 render();
 </script>
+</html>
