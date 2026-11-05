@@ -478,10 +478,11 @@ const SCRIPT = [
   { type: "paren", text: "(deutlich weniger enthusiastisch)", claude: true },
   { type: "dialogue", text: "And then, there's yellow..." },
 
-  { type: "action", text: "Ein lauter, unangenehmer Atemzug ertönt, woraufhin sich alles um die Ampel herum gelb färbt." },
+  { type: "action", text: "Der Atem, der im Hintergrund säuselt, wird lauter und unangenehmer, woraufhin sich alles um die Ampel herum gelb färbt." },
 
   /* ---- Fassung 1 der zusammenhängenden Passage ---- */
   { type: "action", group: "A", v: 1, text: "Das Gelb breitet sich über die gesamte Gegend um die Ampel herum aus. Alle Bäume, Gehwege, Straßen und der Himmel färben sich gelb." },
+  { type: "action", group: "A", v: 1, text: "Zeitgleich hören die Bäume auf zu wehen. Alles wird still." },
   { type: "character", group: "A", v: 1, claude: true, text: "ERZÄHLERSTIMME (V.O.) (CONT'D)" },
   { type: "dialogue", group: "A", v: 1, text: "To most people yellow feels like sunlight. Warm, bright, open." },
   { type: "action", group: "A", v: 1, text: "Das Gelb brennt sich auf die Straße ein, direkt neben dem Schatten der Ampel." },
@@ -492,6 +493,7 @@ const SCRIPT = [
 
   /* ---- Fassung 2 derselben Passage ---- */
   { type: "action", group: "A", v: 2, text: "Das Gelb hat sich auf die gesamte Umgebung ausgebreitet. Lediglich die Schatten sind blau geblieben." },
+  { type: "action", group: "A", v: 2, text: "Mit dem Farbwechsel hören die Bäume und Blätter auf, sich zu bewegen. Alles wird still." },
   { type: "character", group: "A", v: 2, claude: true, text: "ERZÄHLERSTIMME (V.O.) (CONT'D)" },
   { type: "dialogue", group: "A", v: 2, text: "To most people yellow feels like sunlight. Warm, bright, open." },
   { type: "action", group: "A", v: 2, text: "Der blaue Schatten der Ampel ist vom Gelb umgeben, welches sich immer stärker in die Straße frisst und das Blau zurückdrängt." },
@@ -507,15 +509,22 @@ const SCRIPT = [
 
   { type: "action", text: "Die Schatten der Bäume zittern schneller und schneller." },
 
-  { type: "action", text: "Dann wird die Tür zugeschlagen. Kein Gelb ist mehr zu sehen, jedoch wütet es noch draußen." },
+  { type: "action", text: "Dann wird die Tür zugeschlagen. Kein Gelb ist mehr zu sehen, lediglich ist der tosende Wind dumpf zu hören." },
 
   { type: "act", text: "ACT II – 02_HOUSE" },
 
-  { type: "action", text: "Während man Rascheln vom Schuheausziehen und das Klimpern eines Schlüssels hört, sieht man einige Schuhe im Hausflur stehen." },
+  { type: "action", text: "Während man Rascheln vom Schuheausziehen und Klimpern eines Schlüssels hört, sieht man einige Schuhe im Hausflur stehen." },
 
   { type: "action", text: "Der Flur des Hauses ist leer und still. Eine Uhr tickt. Durch einen Türspalt am Ende des Flurs erkennt man die Bewegungen einer Person. Man hört ganz leicht das Laufen eines Wasserhahns und kleine Abspülgeräusche." },
 
-  { type: "action", text: "Ein Blick in die Küche zeigt Silhouetten von drei Personen. Eine steht an der Spüle und wäscht Geschirr. Eine weitere sitzt mit verschränkten Armen und gesenktem Kopf daneben. Etwas mehr in der Raummitte steht eine weitere Person bedrückt herum." }
+  { type: "action", text: "Ein Blick in die Küche zeigt Silhouetten von drei Personen. Eine steht an der Spüle und wäscht Geschirr. Eine weitere sitzt mit verschränkten Armen und gesenktem Kopf daneben. Etwas mehr in der Raummitte steht eine weitere Person bedrückt herum." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.)", claude: true },
+  { type: "dialogue", text: "At some point..." },
+
+  { type: "action", text: "Ein weiterer Blick zeigt weitere Menschen, die sich am Küchentisch befinden. Neben ihnen ein Fenster. Es ist strahlend gelb." },
+
+  { type: "action", text: "Das Tosen des Windes ist präsent, Äste und Zweige bewegen sich vor dem Fenster hektisch. Ein sanfter gelber Lichtstrahl fällt in die Küche." }
 ];
 
 /* Welche Fassung gerade sichtbar ist, je Gruppe. */
