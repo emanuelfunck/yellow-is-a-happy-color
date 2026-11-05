@@ -176,7 +176,9 @@ button.tool:hover { background: var(--fill-hover); color: var(--label); }
 button.tool[aria-pressed="true"] { color: var(--label); background: var(--fill-hover); }
 button.tool:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
 @media (max-width: 860px) { .brand .meta { display: none; } }
-@media (max-width: 720px) { .zoom { display: none; } }
+/* Auf schmalen Geräten weicht zuerst der Kopieren-Knopf, der Zoom bleibt:
+   dort ist die Seite am stärksten verkleinert. */
+@media (max-width: 620px) { #btnCopy { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   button.tool { transition: none; }
 }
