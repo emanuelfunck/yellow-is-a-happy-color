@@ -569,6 +569,16 @@ function makeEl(block) {
   return p;
 }
 
+/* Immer dieselbe Folge fuer dieselbe Stelle: Das Gekritzel soll beim
+   Neuzeichnen nicht herumspringen. */
+function seeded(key) {
+  let s = 7;
+  for (const ch of String(key)) s = (s * 31 + ch.charCodeAt(0)) % 100000;
+  return () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+}
+
+let braceSeq = 0;
+
 /* Eine mit der Hand gezogene geschweifte Klammer: Spitze zeigt nach rechts,
    die offene Seite liegt links am Text. Das Zittern ist pro Stelle fest,
    damit die Linie beim Umschalten nicht herumspringt.
@@ -622,6 +632,8 @@ function brace(seedStr, top, total, offset, segH, isFirst, isLast) {
   // Drehung sie gegeneinander.
   svg.style.transformOrigin = "0px " + (padT - offset) + "px";
 
+  const strokes = document.createElementNS(NS, "g");
+
   // Dreimal angesetzt, wie man eine Klammer mit dem Bleistift zieht.
   for (const [cls, seed, amp] of [
     ["main", base, 1],
@@ -631,8 +643,65 @@ function brace(seedStr, top, total, offset, segH, isFirst, isLast) {
     const path = document.createElementNS(NS, "path");
     path.setAttribute("class", cls);
     path.setAttribute("d", shape(seed, amp));
-    svg.appendChild(path);
+    strokes.appendChild(path);
   }
+
+  /* Wo die Klammer an der Blattkante abbricht, setzt der Stift ab: Der Strich
+     laeuft dort aus, statt wie mit dem Lineal abgeschnitten zu sein. Mal
+     sanfter, mal haerter - das entscheidet derselbe feste Zufall. */
+  if (!isFirst || !isLast) {
+    const lift = seeded("lift" + seedStr + offset);
+    const span = (r) => Math.min(segH * .35, 2 + Math.pow(r, 2.2) * 34);
+    const id = "brace" + (++braceSeq);
+
+    const defs = document.createElementNS(NS, "defs");
+    const grad = document.createElementNS(NS, "linearGradient");
+    grad.setAttribute("id", id);
+    grad.setAttribute("gradientUnits", "userSpaceOnUse");
+    grad.setAttribute("x1", 0); grad.setAttribute("y1", offset);
+    grad.setAttribute("x2", 0); grad.setAttribute("y2", offset + segH);
+
+    const stops = [];
+    if (isFirst) stops.push([0, 1]);
+    else {
+      const f = span(lift()) / segH;
+      stops.push([0, 0], [f * .35, .45], [f, 1]);
+    }
+    if (isLast) stops.push([1, 1]);
+    else {
+      const f = span(lift()) / segH;
+      stops.push([1 - f, 1], [1 - f * .35, .45], [1, 0]);
+    }
+    for (const [at, op] of stops) {
+      const stop = document.createElementNS(NS, "stop");
+      stop.setAttribute("offset", Math.max(0, Math.min(1, at)));
+      stop.setAttribute("stop-color", "#fff");
+      stop.setAttribute("stop-opacity", op);
+      grad.appendChild(stop);
+    }
+    defs.appendChild(grad);
+
+    const mask = document.createElementNS(NS, "mask");
+    mask.setAttribute("id", id + "m");
+    mask.setAttribute("maskUnits", "userSpaceOnUse");
+    mask.setAttribute("x", -5);
+    mask.setAttribute("y", offset - padT);
+    mask.setAttribute("width", W + 10);
+    mask.setAttribute("height", boxH);
+    const cover = document.createElementNS(NS, "rect");
+    cover.setAttribute("x", -5);
+    cover.setAttribute("y", offset - padT);
+    cover.setAttribute("width", W + 10);
+    cover.setAttribute("height", boxH);
+    cover.setAttribute("fill", `url(#${id})`);
+    mask.appendChild(cover);
+    defs.appendChild(mask);
+
+    svg.appendChild(defs);
+    strokes.setAttribute("mask", `url(#${id}m)`);
+  }
+
+  svg.appendChild(strokes);
 
   // Unsichtbarer, breiter Strich: macht die ganze Klammer anklickbar, auch
   // auf einer Folgeseite, wo die Beschriftung fehlt.
@@ -668,8 +737,7 @@ function drawBrackets(pages) {
       segs.push({
         page, g, top,
         h: Math.max(18, bottom - top),
-        // bis zum unteren Rand des Satzspiegels, falls die Passage weiterlaeuft
-        pageBottom: PAD_TOP + content.clientHeight,
+        pageH: page.clientHeight,
         opensPage: i === 0,
         closesPage: j === kids.length - 1
       });
@@ -689,13 +757,25 @@ function drawBrackets(pages) {
 
   // 3. Zeichnen: eine Klammer ueber die ganze Passage, in Stuecken verteilt.
   for (const run of runs) {
-    // Laeuft die Passage weiter, reicht das Stueck bis an den Blattrand,
-    // sonst wuerde die Linie mitten auf der Seite abbrechen.
-    for (let k = 0; k < run.length - 1; k++) {
-      run[k].h = Math.max(run[k].h, run[k].pageBottom - run[k].top);
-    }
-
     const g = run[0].g;
+
+    // Laeuft die Passage weiter, zieht der Strich bis dicht an die Blattkante
+    // und setzt dort ab, statt mitten auf der Seite aufzuhoeren. Wie knapp,
+    // ist pro Stelle fest, aber nicht ueberall gleich.
+    if (run.length > 1) {
+      const edge = seeded("rand" + g);
+      run.forEach((seg, k) => {
+        if (k < run.length - 1) {          // unten abgeschnitten
+          const stop = seg.pageH - (9 + edge() * 20);
+          seg.h = Math.max(seg.h, stop - seg.top);
+        }
+        if (k > 0) {                       // oben abgeschnitten
+          const lead = 9 + edge() * 20;
+          seg.h += seg.top - lead;
+          seg.top = lead;
+        }
+      });
+    }
     const total = run.reduce((sum, seg) => sum + seg.h, 0);
     const all = versionsOf(g);
     const cur = STATE[g];
