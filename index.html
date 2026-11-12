@@ -291,6 +291,7 @@ button.tool:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px;
 .paren + .el { margin-top: 0; }
 .dialogue { margin-left: 96px; width: 317px; }  /* 1in, 3.3in breit */
 .transition { text-align: right; text-transform: uppercase; }
+.end { text-align: center; text-transform: uppercase; margin-top: 2em; }
 /* Aktüberschrift: zentriert und unterstrichen, mit Luft davor und danach */
 .act {
   text-align: center;
@@ -520,16 +521,99 @@ const SCRIPT = [
 
   { type: "action", text: "In der Küche befinden sich drei Personen. Eine steht an der Spüle und wäscht Geschirr. Eine weitere sitzt mit verschränkten Armen und geknickter Haltung daneben. Etwas mehr in der Raummitte steht eine weitere Person mit gesenktem Kopf." },
 
-  { type: "action", text: "Am Küchentisch sitzt eine weitere Person. Daneben ein Fenster, vor dem das Gelb wütet. Das Gelb fällt sanft und weniger aggressiv in die Küche. Das Tosen des Windes wird zunehmend präsenter, während sich Äste und Zweige draußen vor dem Fenster hektisch im Wind bewegen." },
+  { type: "action", text: "Am Küchentisch sitzt eine weitere Person. Daneben ein Fenster, vor dem das Gelb wütet. Das Gelb fällt sanft und weniger aggressiv in die Küche. Das Tosen des Windes wird zunehmend präsenter, während sich Äste und Zweige draußen vor dem Fenster hektisch im Wind bewegen. Der kranke Atem ertönt wieder." },
 
   { type: "character", text: "ERZÄHLERSTIMME (V.O.)", claude: true },
   { type: "dialogue", text: "At some point everything will turn yellow." },
 
-  { type: "action", text: "Im nächsten Raum legt sich das gelbe Licht, das von draußen hereinscheint, sanft über die Wände. Es wirkt deutlich gedämpfter und weniger intensiv als draußen. Der Sturm außerhalb des Hauses ist weiterhin dumpf zu hören, dennoch sehr präsent." },
+  { type: "action", text: "Im nächsten Raum legt sich das gelbe Licht, das von draußen hereinscheint, sanft über die Wände. Es wirkt deutlich gedämpfter und weniger intensiv als draußen. Der Sturm außerhalb des Hauses ist weiterhin dumpf zu hören, dennoch sehr präsent. Der Atem zieht sich weiter." },
 
   { type: "action", text: "Ein Blick in einen anderen Bereich des Hauses zeigt ein paar Personen, die im Strahl des Gelbs stehen, welcher die blaue Wand hinter ihnen großflächig anstrahlt." },
 
-  { type: "action", text: "Ein weiterer Blick landet auf dem gelben Licht- und blauen Schattenspiel eines Fensters, sanft auf einer Wand. Der Wind tost laut und Blätter rascheln lauter am Fenster. Das Geräusch der Berührungen mit den Fensterscheiben wird lauter und lauter." }
+  { type: "action", text: "Ein weiterer Blick landet auf dem gelben Licht- und blauen Schattenspiel eines Fensters, sanft auf einer Wand. Der Wind tost laut und Blätter rascheln lauter am Fenster. Das Geräusch der Berührungen mit den Fensterscheiben wird lauter und lauter." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.)", claude: true },
+  { type: "dialogue", text: "I never thought this day would come so soon." },
+
+  { type: "scene", text: "INT. TREPPENHAUS - TAG", claude: true },
+
+  { type: "action", text: "Das gelbe Licht fällt sanft auf Treppenstufen. Das Flüstern im Haus wird präsenter. Der Atem wird lauter." },
+
+  { type: "action", text: "Der Blick richtet sich die Treppe rauf auf einen Mann, der am oberen Treppenende aus einem gelben Fenster schaut. Er wird leicht angeleuchtet." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.)", claude: true },
+  { type: "dialogue", text: "I never wanted you to turn yellow." },
+
+  { type: "scene", text: "INT. OBERER FLUR - TAG", claude: true },
+
+  { type: "action", text: "Der nächste Blick geht einen Flur hinunter und landet geradeaus auf einer Tür, die durch ein offenes Fenster stark und grell gelb angestrahlt wird. Die Tür steht einen Spalt offen. Es lässt sich nicht erkennen, was sich dahinter befindet." },
+
+  { type: "action", text: "Im Flur stehen links und rechts Menschen. Die einen reden miteinander, einige sind still für sich. Nirgendwo im Haus befanden sich so viele Personen wie hier. Die Vorhänge wehen im Wind, der Wind tost, das Flüstern ist so laut wie noch nie. Der Atem tönt laut auf." },
+
+  { type: "action", text: "Die Tür ist jetzt in unmittelbarer Nähe. Der Atem übertönt alle anderen Geräusche, welche in einem Swell immer weiter ansteigen. Es wirkt so, als komme es aus dem Türspalt. Die gelb angestrahlte Tür wird vorsichtig geöffnet." },
+
+  { type: "action", text: "Die Tür wird geschlossen und alle Geräusche verstummen. Lediglich der erdrückende, zerbrechliche Atem geht weiter." },
+
+  { type: "scene", text: "INT. SCHLAFZIMMER - TAG", claude: true },
+
+  { type: "action", text: "Im Großformat liegt eine gelb leuchtende Person in einem Bett, vor pechschwarzem Hintergrund. Sie ist halb zugedeckt. Der Brustkorb hebt und senkt sich, während man den schweren Atem so klar und laut wie je zuvor hört. Der knochige Körper bewegt sich kaum." },
+
+  { type: "action", text: "Ein letzter, unregelmäßiger Atemzug entweicht, die Hände verkrampfen sich, der Herzschlag klingt aus. Dann wird es still, der Körper nun endgültig reglos." },
+
+  { type: "action", text: "Nach einem Moment lösen sich die Konturen der Person langsam auf, sie verwischen leicht, und kleine gelbe Flächen breiten sich langsam in den schwarzen Raum aus, bis die Person kaum mehr zu erkennen ist. Je mehr der Körper verwischt, desto stärker kommt ein Windsäuseln auf." },
+
+  { type: "action", text: "Das Gelb hat nun komplett das Bild eingenommen. Es bewegt sich erst langsam und organisch, und wird dann immer schneller und hektischer. Es gibt keine räumliche Orientierung mehr. Alles ist abstraktes, tosendes Gelb." },
+
+  { type: "action", text: "Abstrakte Klangflächen mischen sich unter den Wind, der immer lauter wird. Blätterrascheln kommt hinzu. Die gelben Schlieren, die durchziehen, sind so schnell, dass sie kaum mit dem Auge zu fixieren sind. Die Klangflächen fallen in tiefere Frequenzen, die restlichen Geräusche werden immer lauter, bis ins Unerträgliche." },
+
+  { type: "transition", text: "SMASH CUT TO:" },
+
+  { type: "scene", text: "EXT. GARTEN - TAG", claude: true },
+
+  { type: "action", text: "Blätter rascheln laut auf, während eine Windböe durch sie zieht. Sie beruhigen sich wieder. Durch die Blätter blitzt die gelbe Sonne durch. An den blauen Blättern haftet stellenweise gelbe Farbe. Das Gelb schimmert. Eine kleine Böe weht noch einmal durch, dann wird es wieder stiller." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.)", claude: true },
+  { type: "dialogue", text: "I lived this moment a hundred times, over and over again, and I can't take it anymore." },
+
+  { type: "action", text: "Stille. Die Blätter rascheln weiter." },
+
+  { type: "action", text: "Im Inneren des Hauses dominiert das kühle Blau, während draußen Gelb und Blau zunehmend ineinander übergehen." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "I might never get rid of yellow." },
+
+  { type: "action", text: "Die Blätter werfen ein blaues Schattenspiel an die Hauswand von außen. Die Fassade leuchtet gelb. Geräusche von Wildbienen, Vögeln und einer ruhigen Nachbarschaft sind zu hören. Das Fenster steht noch immer offen. Die Vorhänge innen wehen." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "Everywhere I look, I see yellow now." },
+
+  { type: "action", text: "Eine gelbe Hummel setzt sich auf eine blaue Blüte." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "But that means..." },
+
+  { type: "action", text: "Die Sonne taucht die Baumkronen in ein warmes Licht, während die Baumstämme im kühlen, blauen Schatten stehen." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "... that I see YOU everywhere now." },
+
+  { type: "action", text: "Das gelbe Licht ist inzwischen zunehmend golden geworden, entsprechend der Dämmerung." },
+
+  { type: "action", text: "Blick in einen goldenen Abendhimmel. Die Wolken sind blau getönt." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "I want to accept yellow, because of you." },
+
+  { type: "action", text: "Ein kleiner Schwarm Zugvögel zieht am Himmel vorbei. Die Sonne verschwindet langsam, was ein tiefes Blau und ein rötlich goldenes Gelb entstehen lässt." },
+
+  { type: "character", text: "ERZÄHLERSTIMME (V.O.) (CONT'D)", claude: true },
+  { type: "dialogue", text: "Summer days really are the longest..." },
+
+  { type: "action", text: "Der Wind zieht durch die Gegend, die Welt legt sich zur Ruhe." },
+
+  { type: "transition", text: "CREDITS" },
+
+  { type: "end", text: "THE END", claude: true }
 ];
 
 /* Welche Fassung gerade sichtbar ist, je Gruppe. */
@@ -558,7 +642,7 @@ function setVersion(g, v) {
 /* ========================= Aufbau der Seiten ============================= */
 const CLASS = {
   scene: "scene", action: "action", character: "character",
-  paren: "paren", dialogue: "dialogue", transition: "transition",
+  paren: "paren", dialogue: "dialogue", transition: "transition", end: "end",
   act: "act"
 };
 const PAGE_H = 864;   // 9in Satzspiegel in px
@@ -965,6 +1049,7 @@ function plainText() {
     else if (b.type === "dialogue") lines.push(...wrap(b.text, 35).map(l => pad(10) + l), "");
     else if (b.type === "paren") lines.push(...wrap(b.text, 25).map(l => pad(15) + l));
     else if (b.type === "transition") lines.push(pad(Math.max(0, 60 - b.text.length)) + b.text, "");
+    else if (b.type === "end") lines.push("", pad(Math.max(0, (60 - b.text.length) >> 1)) + b.text, "");
     else { lines.push(...wrap(b.text, 60)); lines.push(""); }
   }
   return lines.join("\n");
